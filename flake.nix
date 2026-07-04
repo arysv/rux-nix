@@ -12,7 +12,6 @@
     pkgs = nixpkgs.legacyPackages.${system};
     
     stdenv = pkgs.llvmPackages_22.stdenv;
-
     cmake42 = cmake-nix.packages.${system}.default;
 
     rux-pkg = stdenv.mkDerivation {
@@ -30,6 +29,10 @@
         cmake42
         pkgs.ninja
       ];
+
+      preConfigure = ''
+        export CPATH="${pkgs.llvmPackages_22.libcxx.dev}/include/c++/v1"
+      '';
 
       installPhase = ''
         runHook preInstall
@@ -59,9 +62,8 @@
       ];
       
       shellHook = ''
+        export CPATH="${pkgs.llvmPackages_22.libcxx.dev}/include/c++/v1"
         echo "Rux dev environment loaded."
-        echo "Using compiler: $(clang++ --version | head -n1)"
-        echo "Using CMake: $(cmake --version | head -n1)"
       '';
     };
   };
