@@ -37,14 +37,11 @@
 
       installPhase = ''
         runHook preInstall
-        
         mkdir -p $out/bin
-        find . -name "rux" -type f -executable -exec cp {} $out/bin/ \;
-        
+        find .. -name "rux" -type f -exec cp {} $out/bin/ \;
+        chmod +x $out/bin/rux
         runHook postInstall
       '';
-    };
-
   in {
     packages.${system} = {
       default = rux-pkg;
