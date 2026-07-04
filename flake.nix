@@ -49,8 +49,10 @@
 
   in {
     # 1. Package output (for `nix build` and `nix profile`)
-    packages.${system}.default = rux-pkg;
-    packages.${system}.rux = rux-pkg;
+    packages.${system} = {
+      default = rux-pkg;
+      rux = rux-pkg;
+    };
 
     # 2. Overlay output (for system-wide nixos-rebuild and legacy nix-env)
     overlays.default = final: prev: {
