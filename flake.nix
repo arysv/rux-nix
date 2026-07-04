@@ -42,6 +42,7 @@
         chmod +x $out/bin/rux
         runHook postInstall
       '';
+    };
   in {
     packages.${system} = {
       default = rux-pkg;
