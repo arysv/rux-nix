@@ -11,7 +11,8 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     
-    stdenv = pkgs.llvmPackages_22.stdenv;
+    stdenv = pkgs.llvmPackages_22.libcxxStdenv;
+    
     cmake42 = cmake-nix.packages.${system}.default;
 
     rux-pkg = stdenv.mkDerivation {
@@ -62,7 +63,7 @@
       ];
       
       shellHook = ''
-        echo "Rux dev environment loaded."
+        echo "Rux dev environment loaded (Pure LLVM/libc++)."
       '';
     };
   };
