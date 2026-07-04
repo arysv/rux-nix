@@ -3,15 +3,16 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    cmake-nix.url = "github:arysv/cmake-nix";
   };
 
-  outputs = { self, nixpkgs }: 
+  outputs = { self, nixpkgs, cmake-nix }: 
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-    
-    # Swap Nix's default GCC stdenv for LLVM/Clang 22
     stdenv = pkgs.llvmPackages_22.stdenv;
+
+    cmake42 = cmake-nix.packages.${system}.default;
 
     rux-pkg = stdenv.mkDerivation {
       pname = "rux";
@@ -21,17 +22,15 @@
         owner = "rux-lang";
         repo = "Rux";
         rev = "main";
-        # Remember to update this hash after your first `nix build` attempt
         hash = "sha256-m7R+pyNvKfPcvyu/1LH/d9UvuH7e46I2xSX5c1I7QAM="; 
       };
 
       nativeBuildInputs = with pkgs; [
-        llvmPackages_22.clang # Explicitly bring Clang into the build environment
-        cmake
+        llvmPackages_22.clang
+        cmake42
         ninja
       ];
 
-      # Force CMake to use Clang during the configure phase
       cmakeFlags = [
         "-DCMAKE_CXX_COMPILER=clang++"
         "-DCMAKE_C_COMPILER=clang"
@@ -48,32 +47,29 @@
     };
 
   in {
-    # 1. Package output (for `nix build` and `nix profile`)
     packages.${system} = {
       default = rux-pkg;
       rux = rux-pkg;
     };
 
-    # 2. Overlay output (for system-wide nixos-rebuild and legacy nix-env)
     overlays.default = final: prev: {
       rux = rux-pkg;
     };
 
-    # 3. Dev shell (for `nix develop`)
     devShells.${system}.default = pkgs.mkShell.override { inherit stdenv; } {
       nativeBuildInputs = with pkgs; [ 
         llvmPackages_22.clang 
-        cmake 
+        cmake42
         ninja 
         git 
       ];
       
-      # Ensure manual terminal usage defaults to Clang
       shellHook = ''
         export CC=clang
         export CXX=clang++
         echo "Rux dev environment loaded."
         echo "Using compiler: $(clang++ --version | head -n1)"
+        echo "Using CMake: $(cmake --version | head -n1)"
       '';
     };
   };
