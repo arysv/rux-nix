@@ -22,7 +22,7 @@
         repo = "Rux";
         rev = "main";
         # Remember to update this hash after your first `nix build` attempt
-        hash = pkgs.lib.fakeHash; 
+        hash = "sha256-m7R+pyNvKfPcvyu/1LH/d9UvuH7e46I2xSX5c1I7QAM="; 
       };
 
       nativeBuildInputs = with pkgs; [
