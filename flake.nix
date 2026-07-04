@@ -30,9 +30,9 @@
         pkgs.ninja
       ];
 
-      preConfigure = ''
-        export CPATH="${pkgs.llvmPackages_22.libcxx.dev}/include/c++/v1"
-      '';
+      cmakeFlags = [
+        "-DCMAKE_CXX_SCAN_FOR_MODULES=OFF"
+      ];
 
       installPhase = ''
         runHook preInstall
@@ -62,7 +62,6 @@
       ];
       
       shellHook = ''
-        export CPATH="${pkgs.llvmPackages_22.libcxx.dev}/include/c++/v1"
         echo "Rux dev environment loaded."
       '';
     };
